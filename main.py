@@ -3,6 +3,7 @@ from typing import List
 from loguru import logger
 import re
 
+logger.add("log.log", level="DEBUG")
 
 @dataclass
 class Credit:
@@ -54,6 +55,6 @@ def read_package(package : str) -> List:
 if __name__ == '__main__':
     input = '''amount: 100000
 interest: 5.5%
-downpayment: 20000
+downpaymen: 20000
 term: 30'''
     print(Credit(*read_package(input)).print_parametrs_credit())
