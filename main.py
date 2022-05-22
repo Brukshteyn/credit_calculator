@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from loguru import logger
 import re
 
 
@@ -33,7 +34,7 @@ class Credit:
                                         charges = self.get_interest_charges(),
                                         general = self.get_general_sum_payment())
 
-
+@logger.catch
 def read_package(package : str) -> List:
     """Чтение строки и вынос параметров для реализации класса Credit."""
     INFO_MESSAGE_ERROR = 'Ошибка в {key}, пришло {package}'
@@ -46,8 +47,8 @@ def read_package(package : str) -> List:
         try:
             list_values.append(float(re.findall(DICT_KEYS[key], package.replace(' ', ''))[0]))
         except:
-            print(KeyError(INFO_MESSAGE_ERROR.format(key = key, package = package)))
-            break
+            raise KeyError(INFO_MESSAGE_ERROR.format(key=key, package=package))
+
     return list_values
 
 if __name__ == '__main__':
