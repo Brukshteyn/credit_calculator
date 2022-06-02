@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from typing import List
 from loguru import logger
 import re
+import os
 
-logger.add("log.log", level="DEBUG")
+logger.add(os.path.expanduser(__file__), level="DEBUG")
 
 
 class Levenshtein:
