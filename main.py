@@ -5,6 +5,28 @@ import re
 
 logger.add("log.log", level="DEBUG")
 
+
+class Levenshtein:
+    """Вычисление различия строк методом Левенштейна."""
+
+    def __init__(self, str_one : str, srt_two : str) -> None:
+        self.str_one = str_one
+        self.str_two = srt_two
+        self.distance = self.calculate_distance(len(str_one) - 1, len(srt_two) - 1)
+
+    def calculate_distance(self, i : int, j : int) -> None:
+        if i == 0 or j == 0:
+            return max(i, j)
+        elif self.str_one[i] == self.str_two[j]:
+            return self.calculate_distance(i - 1, j - 1)
+        return 1 + min(
+            self.calculate_distance(i, j - 1),
+            self.calculate_distance(i - 1, j),
+            self.calculate_distance(i - 1, j - 1))
+
+    def get_distance(self) -> int:
+        return self.distance
+
 @dataclass
 class Credit:
 
@@ -39,14 +61,21 @@ class Credit:
 def read_package(package : str) -> List:
     """Чтение строки и вынос параметров для реализации класса Credit."""
     INFO_MESSAGE_ERROR = 'Ошибка в {key}, пришло {package}'
-    DICT_KEYS = {'amount' : r'amount:(\d+)\n',
-                 'interest' : r'interest:(\d.\d|\d|/d/d)%',
-                 'downpayment' : r'downpayment:(\d+)\n',
-                 'term' : r'term:(\d+)'}
+    KEY_ERROR = 'Нет переноса на новую строку'
+    DICT_KEYS = {'amount' : r'{key}:(\d+)',
+                 'interest' : r'{key}:(\d.\d|\d|/d/d)%',
+                 'downpayment' : r'{key}:(\d+)',
+                 'term' : r'{key}:(\d+)'}
+    LEVENSHTEIN_UP = 2
     list_values = []
-    for key in DICT_KEYS.keys():
+    disspace_package_list = package.replace(' ', '').split('\n')
+    if len(disspace_package_list) != 4:
+        raise KeyError(INFO_MESSAGE_ERROR.format(key=KEY_ERROR, package=package))
+    for key_input, key in zip(disspace_package_list, DICT_KEYS.keys()):
         try:
-            list_values.append(float(re.findall(DICT_KEYS[key], package.replace(' ', ''))[0]))
+            if Levenshtein(key_input.split(':')[0], key).get_distance() > LEVENSHTEIN_UP:
+                raise KeyError(INFO_MESSAGE_ERROR.format(key=key, package=package))
+            list_values.append(float(re.findall(DICT_KEYS[key].format(key=key_input.split(':')[0]), key_input)[0]))
         except:
             raise KeyError(INFO_MESSAGE_ERROR.format(key=key, package=package))
 
@@ -55,6 +84,6 @@ def read_package(package : str) -> List:
 if __name__ == '__main__':
     input = '''amount: 100000
 interest: 5.5%
-downpaymen: 20000
+downpayment: 20000
 term: 30'''
     print(Credit(*read_package(input)).print_parametrs_credit())
