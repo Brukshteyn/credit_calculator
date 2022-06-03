@@ -1,11 +1,16 @@
 from dataclasses import dataclass
+import datetime as dt
 from typing import List
 from loguru import logger
 import re
 import os
 
-logger.add(os.path.expanduser(__file__), level="DEBUG")
+DIRECTORY_LOG = '{folder}\log_credit_{datetime}.log'
+FORMAT_DATETIME_LOG = '%d-%m-%y %H-%M-%S'
 
+logger.add(DIRECTORY_LOG.format(folder = os.path.dirname(os.path.abspath(__file__)),
+                                datetime = dt.datetime.now().strftime(FORMAT_DATETIME_LOG)),
+           level="DEBUG")
 
 class Levenshtein:
     """Вычисление различия строк методом Левенштейна."""
