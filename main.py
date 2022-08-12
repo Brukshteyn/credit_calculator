@@ -7,7 +7,7 @@ import os
 
 DIRECTORY_LOG = '{folder}\log_credit_{datetime}.log'
 FORMAT_DATETIME_LOG = '%d-%m-%y %H-%M-%S'
-
+LEVENSHTEIN_UP = 2
 logger.add(DIRECTORY_LOG.format(folder = os.path.dirname(os.path.abspath(__file__)),
                                 datetime = dt.datetime.now().strftime(FORMAT_DATETIME_LOG)),
            level="DEBUG")
@@ -72,7 +72,6 @@ def read_package(package : str) -> List:
                  'interest' : r'{key}:(\d.\d|\d|/d/d)%',
                  'downpayment' : r'{key}:(\d+)',
                  'term' : r'{key}:(\d+)'}
-    LEVENSHTEIN_UP = 2
     list_values = []
     disspace_package_list = package.replace(' ', '').split('\n')
     if len(disspace_package_list) != 4:
